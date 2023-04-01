@@ -19,6 +19,9 @@ def handle_request(request):
 
 
 def get_visualization(request):
+    """
+    Return merged visualization files.
+    """
     library_layout = request.GET.get('library_layout', None)
     library_source = request.GET.get('library_source', None)
 
