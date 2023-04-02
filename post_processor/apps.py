@@ -6,4 +6,7 @@ class PostProcessorConfig(AppConfig):
     name = 'post_processor'
 
     def ready(self):
-        print('Initialized...........')
+        """
+        This runs only once at the beginning.
+        """
+        pass

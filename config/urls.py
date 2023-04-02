@@ -18,5 +18,6 @@ from django.urls import include, path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("", include("post_processor.urls"))
+    path("", include("post_processor.urls")),
+    path('celery-progress/', include('celery_progress.urls')),
 ]
