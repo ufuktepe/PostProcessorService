@@ -4,7 +4,7 @@ from celery import shared_task
 from celery_progress.backend import ProgressRecorder
 
 from config.settings import ENV
-from config.settings import S3_PATH
+from config.settings import S3_MERGED_RESULTS_PATH
 from .DataEngineering import results_merger
 from .DataEngineering import utils
 
@@ -14,7 +14,7 @@ def merge_results(self, feature_table_paths, taxonomy_results_paths):
     """
     Celery task to merge the results.
     """
-    output_dir = os.path.join(S3_PATH, self.request.id)
+    output_dir = os.path.join(S3_MERGED_RESULTS_PATH, self.request.id)
     utils.create_dir(output_dir)
 
     # Create a progress recorder.

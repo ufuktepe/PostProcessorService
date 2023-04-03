@@ -16,7 +16,10 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 ENV = 'qiime2-2022.2'
-S3_PATH = '/home/qiime2/qiime2_input'
+# ENV = 'qiime2-2022.11'
+
+S3_MERGED_RESULTS_PATH = '/home/qiime2/qiime2storage/merged_results'
+# S3_MERGED_RESULTS_PATH = '/Volumes/Burak_HDD/qiime2/small_subset_test'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
