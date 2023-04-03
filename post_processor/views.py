@@ -14,6 +14,11 @@ from .tasks import merge_results
 
 
 @csrf_exempt
+def test(request):
+    return HttpResponse("Post Processor API Test Page.")
+
+
+@csrf_exempt
 def handle_request(request):
     """
     Route the request.
