@@ -1,6 +1,7 @@
 import json
 import os
 import zipfile
+from time import strftime
 from wsgiref.util import FileWrapper
 
 from django.http import HttpResponse, JsonResponse
@@ -44,13 +45,14 @@ def get_visualization(request):
         studies = studies.filter(library_layout=library_layout.lower())
 
     feature_table_paths, taxonomy_results_paths = get_file_paths(studies)
+    timestamp = strftime('%Y%m%d-%H%M%S')
 
     try:
-        worker = merge_results.delay(feature_table_paths, taxonomy_results_paths)
+        worker = merge_results.delay(feature_table_paths, taxonomy_results_paths, timestamp)
     except ValueError as e:
         return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    return JsonResponse({'task_id': worker.task_id})
+    return JsonResponse({'task_id': worker.task_id, 'timestamp': timestamp})
 
 
 def get_results(request):

@@ -10,11 +10,11 @@ from .DataEngineering import utils
 
 
 @shared_task(bind=True)
-def merge_results(self, feature_table_paths, taxonomy_results_paths):
+def merge_results(self, feature_table_paths, taxonomy_results_paths, timestamp):
     """
     Celery task to merge the results.
     """
-    output_dir = os.path.join(S3_MERGED_RESULTS_PATH, self.request.id)
+    output_dir = os.path.join(S3_MERGED_RESULTS_PATH, timestamp + '-' + self.request.id)
     utils.create_dir(output_dir)
 
     # Create a progress recorder.
