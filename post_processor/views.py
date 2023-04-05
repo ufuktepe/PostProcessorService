@@ -54,9 +54,9 @@ def get_visualization(request):
 
     res = JsonResponse({'task_id': worker.task_id, 'timestamp': timestamp})
 
-    res.headers['Access-Control-Allow-Origin'] = True
+    res.headers['Access-Control-Allow-Origin'] = '*'
 
-    return JsonResponse({'task_id': worker.task_id, 'timestamp': timestamp})
+    return res
 
 
 def get_results(request):
