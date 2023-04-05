@@ -93,6 +93,7 @@ def update_database(request):
                       feature_table_path=s.get('feature_table_path', None),
                       taxonomy_results_path=s.get('taxonomy_results_path', None))
         study.save()
+        print(f"Study {s['id']} saved successfully.")
 
     return Response(status=status.HTTP_201_CREATED)
 
