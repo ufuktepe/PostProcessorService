@@ -52,6 +52,10 @@ def get_visualization(request):
     except ValueError as e:
         return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    res = JsonResponse({'task_id': worker.task_id, 'timestamp': timestamp})
+
+    res.headers['Access-Control-Allow-Origin'] = True
+
     return JsonResponse({'task_id': worker.task_id, 'timestamp': timestamp})
 
 
