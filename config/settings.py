@@ -15,11 +15,14 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-ENV = 'qiime2-2022.2'
-# ENV = 'qiime2-2022.11'
+# ENV = 'qiime2-2022.2'
+ENV = 'qiime2-2022.11'
 
-S3_MERGED_RESULTS_PATH = '/home/qiime2/qiime2storage/merged_results'
-# S3_MERGED_RESULTS_PATH = '/Volumes/Burak_HDD/qiime2/small_subset_test'
+# S3_MERGED_RESULTS_PATH = '/home/qiime2/qiime2storage/merged_results'
+S3_MERGED_RESULTS_PATH = '/Volumes/Burak_HDD/qiime2/merged_results'
+
+# CONDA_PATH = '/home/qiime2/miniconda/bin/conda'
+CONDA_PATH = '/Users/burak/miniconda3/bin/conda'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
@@ -87,8 +90,12 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'NcbiSraPostgress',
+        'USER': 'postgres',
+        'PASSWORD': 'ThisIsAMasterPassword',
+        'HOST': 'ncbisrapostgress.cp1zd8eys4m3.us-east-1.rds.amazonaws.com',
+        'PORT': '5432',
     }
 }
 
@@ -110,6 +117,35 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+LOGGING = {
+    'version': 1,
+
+    # retain the default loggers
+    'disable_existing_loggers': False,
+
+    'handlers': {
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': 'post_processor.log',
+            'formatter': 'verbose',
+        },
+    },
+    # A logger for DEBUG that has a handler called 'file'.
+    'loggers': {
+        '': {
+            # Call the file variable in handler
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+    'formatters': {
+            'verbose': {
+                'format': '%(name)s: %(asctime)s | %(levelname)s | %(filename)s:%(lineno)s | %(message)s'
+            },
+        },
+}
 
 
 # Internationalization

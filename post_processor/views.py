@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import zipfile
 from time import strftime
@@ -10,8 +11,10 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from .models import Study
+from .models import Status
 from .tasks import merge_results
+
+logger = logging.getLogger(__name__)
 
 
 @csrf_exempt
@@ -24,27 +27,21 @@ def handle_request(request):
     """
     Route the request.
     """
-    if request.method == 'GET':
-        return get_visualization(request)
-    elif request.method == 'POST':
-        return update_database(request)
+    if request.method != 'POST':
+        logger.info('Received invalid request.')
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    return Response(status=status.HTTP_400_BAD_REQUEST)
+    request_body = json.loads(request.body)
 
+    run_ids_str = request_body.get('run_ids', None)
 
-def get_visualization(request):
-    """
-    Return merged visualization files.
-    """
-    library_layout = request.GET.get('library_layout', None)
+    if run_ids_str is None:
+        print('Invalid run IDs.')
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    studies = Study.objects.all()
+    run_ids = run_ids_str.split()
 
-    # Filter studies
-    if library_layout:
-        studies = studies.filter(library_layout=library_layout.lower())
-
-    feature_table_paths, taxonomy_results_paths = get_file_paths(studies)
+    feature_table_paths, taxonomy_results_paths = get_file_paths(run_ids)
     timestamp = strftime('%Y%m%d-%H%M%S')
 
     try:
@@ -52,62 +49,39 @@ def get_visualization(request):
     except ValueError as e:
         return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    res = JsonResponse({'task_id': worker.task_id, 'timestamp': timestamp})
+    response = JsonResponse({'task_id': worker.task_id, 'timestamp': timestamp})
 
-    res.headers['Access-Control-Allow-Origin'] = '*'
-
-    return res
-
-
-def get_results(request):
-    """
-    Zip the results in the temp folder and return the zip file.
-    """
-    output_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'temp')
-
-    zip_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'results.zip')
-    with zipfile.ZipFile(zip_path, mode="w") as archive:
-        for root, sub_dirs, file_names in os.walk(output_dir):
-            for file_name in file_names:
-                archive.write(os.path.join(root, file_name), arcname=file_name)
-
-    response = HttpResponse(FileWrapper(open(zip_path, 'rb')), content_type='application/zip')
-    response['Content-Disposition'] = 'attachment; filename="results.zip"'
+    response.headers['Access-Control-Allow-Origin'] = '*'
 
     return response
 
 
-@api_view(('POST',))
-def update_database(request):
-    """
-    Extract the studies from the request and save them in the database.
-    """
-    studies = json.loads(request.body)
-
-    for s in studies:
-        if 'id' not in s:
-            continue
-
-        study = Study(id=s['id'],
-                      library_layout=s.get('library_layout', None),
-                      feature_table_path=s.get('feature_table_path', None),
-                      taxonomy_results_path=s.get('taxonomy_results_path', None))
-        study.save()
-        print(f"Study {s['id']} saved successfully.")
-
-    return Response(status=status.HTTP_201_CREATED)
-
-
-def get_file_paths(studies):
+def get_file_paths(run_ids):
     """
     Return file path strings for feature tables and taxonomy results
     """
     feature_table_paths = ''
     taxonomy_results_paths = ''
 
-    # Build paths for feature tables and taxonomy results.
-    for study in studies:
-        feature_table_paths += study.feature_table_path + ' '
-        taxonomy_results_paths += study.taxonomy_results_path + ' '
+    for run_id in run_ids:
+        try:
+            run_status = Status.objects.get(pk=run_id)
+        except Status.DoesNotExist:
+            # Skip the run id
+            continue
+
+        # Build file paths
+        output_path = run_status.output_path
+        feature_table_path = os.path.join(output_path, f'{run_id}_feature-table.qza')
+        taxonomy_results_path = os.path.join(output_path, f'{run_id}_taxonomy.qza')
+
+        # Verify that files exist
+        if not os.path.isfile(feature_table_path):
+            continue
+        if not os.path.isfile(taxonomy_results_path):
+            continue
+
+        feature_table_paths += feature_table_path + ' '
+        taxonomy_results_paths += taxonomy_results_path + ' '
 
     return feature_table_paths, taxonomy_results_paths
