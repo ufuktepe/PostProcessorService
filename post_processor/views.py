@@ -44,7 +44,7 @@ def handle_request(request):
         return Response(status=status.HTTP_400_BAD_REQUEST)
     print('4')
     run_ids = run_ids_str.split()
-    print('5')
+    print(f'Run ids are: {run_ids}')
     feature_table_paths, taxonomy_results_paths = get_file_paths(run_ids)
     print('6')
     timestamp = strftime('%Y%m%d-%H%M%S')
@@ -74,6 +74,7 @@ def get_file_paths(run_ids):
     """
     Return file path strings for feature tables and taxonomy results
     """
+    print(f'get_file_paths {10}')
     feature_table_paths = ''
     taxonomy_results_paths = ''
 
