@@ -26,6 +26,8 @@ def handle_request(request):
     """
     Route the request.
     """
+    logger.info(f'Received {request.method} request.')
+    print(request.method)
     if request.method != 'POST':
         logger.info('Received invalid request.')
         return Response(status=status.HTTP_400_BAD_REQUEST)
