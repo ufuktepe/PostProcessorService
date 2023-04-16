@@ -31,7 +31,7 @@ CONDA_PATH = '/home/qiime2/miniconda/bin/conda'
 SECRET_KEY = '00$lifgx%kcfvi*28^+xgdd6gvk*h&fs^4g0h%(0q3is3*hapi'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 

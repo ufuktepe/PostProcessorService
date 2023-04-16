@@ -32,8 +32,12 @@ def handle_request(request):
         logger.info('Received invalid request.')
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
+    print('1')
+    logger.info(f'1.')
     request_body = json.loads(request.body)
-
+    logger.info(f'2.')
+    print('2')
+    logger.info(f'Received {request.method} request.')
     run_ids_str = request_body.get('run_ids', None)
 
     if run_ids_str is None:
