@@ -15,14 +15,14 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# ENV = 'qiime2-2022.2'
-ENV = 'qiime2-2022.11'
+ENV = 'qiime2-2022.2'
+# ENV = 'qiime2-2022.11'
 
-# S3_MERGED_RESULTS_PATH = '/home/qiime2/qiime2storage/merged_results'
-S3_MERGED_RESULTS_PATH = '/Volumes/Burak_HDD/qiime2/merged_results'
+S3_MERGED_RESULTS_PATH = '/home/qiime2/qiime2storage/merged_results'
+# S3_MERGED_RESULTS_PATH = '/Volumes/Burak_HDD/qiime2/merged_results'
 
-# CONDA_PATH = '/home/qiime2/miniconda/bin/conda'
-CONDA_PATH = '/Users/burak/miniconda3/bin/conda'
+CONDA_PATH = '/home/qiime2/miniconda/bin/conda'
+# CONDA_PATH = '/Users/burak/miniconda3/bin/conda'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
