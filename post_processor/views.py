@@ -80,7 +80,9 @@ def get_file_paths(run_ids):
 
     for run_id in run_ids:
         try:
+            print(f'get_file_paths {11}')
             run_status = Status.objects.get(pk=run_id)
+            print(f'get_file_paths {12}')
         except Status.DoesNotExist:
             # Skip the run id
             continue
@@ -89,14 +91,14 @@ def get_file_paths(run_ids):
         output_path = run_status.output_path
         feature_table_path = os.path.join(output_path, f'{run_id}_feature-table.qza')
         taxonomy_results_path = os.path.join(output_path, f'{run_id}_taxonomy.qza')
-
+        print(f'get_file_paths {13}')
         # Verify that files exist
         if not os.path.isfile(feature_table_path):
             continue
         if not os.path.isfile(taxonomy_results_path):
             continue
-
+        print(f'get_file_paths {14}')
         feature_table_paths += feature_table_path + ' '
         taxonomy_results_paths += taxonomy_results_path + ' '
-
+        print(f'get_file_paths {15}')
     return feature_table_paths, taxonomy_results_paths
