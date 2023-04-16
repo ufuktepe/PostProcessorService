@@ -9,6 +9,8 @@ from config.settings import ENV
 from config.settings import S3_MERGED_RESULTS_PATH
 from .DataEngineering import results_merger
 from .DataEngineering import utils
+from .models import Metadata
+from .models import Results
 
 
 @shared_task(bind=True)
@@ -91,3 +93,45 @@ def move_data_folder(output_dir, folder_name):
                 shutil.move(os.path.join(root, sub_dir), os.path.join(output_dir, folder_name))
                 done = True
                 break
+
+
+@shared_task(bind=True)
+def create_results_csv(self, run_ids, output_dir):
+    """
+    Celery task to create a csv file that includes Qiime2 results.
+    """
+    # Create a progress recorder.
+    progress_recorder = ProgressRecorder(self)
+    progress_recorder.set_progress(5, 100, description=f"Process started.")
+
+    csv_contents = []
+    n_runs = len(run_ids)
+
+    # Populate csv contents list
+    for i, run_id in enumerate(run_ids):
+        progress_recorder.set_progress(int(5 + 85 * (i + 1) / n_runs), 100, description=f"Querying the database.")
+
+        try:
+            run_metadata = Metadata.objects.get(pk=run_id)
+        except Metadata.DoesNotExist:
+            # Skip the run id
+            continue
+
+        try:
+            run_results = Results.objects.filter(acc=run_id)
+        except Results.DoesNotExist:
+            # Skip the run id
+            continue
+
+        for run_result in run_results:
+            csv_contents.append(f'{run_result.acc},{run_result.taxon},{run_result.confidence},{run_result.abundance}\n')
+
+    progress_recorder.set_progress(95, 100, description=f"Generating the csv file.")
+
+    # Create the csv file
+    results_csv_path = os.path.join(output_dir, 'results.csv')
+    with open(results_csv_path, "w") as results:
+        results.write('acc,taxon,confidence,abundance\n')
+        results.writelines(csv_contents)
+
+    progress_recorder.set_progress(100, 100, description=f"Process completed.")
