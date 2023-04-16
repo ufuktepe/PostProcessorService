@@ -61,7 +61,7 @@ def handle_request(request):
                              'create_csv_task_id': worker_create_results_csv.task_id,
                              'timestamp': timestamp})
 
-    # response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Origin'] = '*'
 
     return response
 
