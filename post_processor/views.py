@@ -33,20 +33,20 @@ def handle_request(request):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
     print('1')
-    logger.info(f'1.')
     request_body = json.loads(request.body)
-    logger.info(f'2.')
+
     print('2')
     logger.info(f'Received {request.method} request.')
     run_ids_str = request_body.get('run_ids', None)
-
+    print('3')
     if run_ids_str is None:
         print('Invalid run IDs.')
         return Response(status=status.HTTP_400_BAD_REQUEST)
-
+    print('4')
     run_ids = run_ids_str.split()
-
+    print('5')
     feature_table_paths, taxonomy_results_paths = get_file_paths(run_ids)
+    print('6')
     timestamp = strftime('%Y%m%d-%H%M%S')
 
     try:
