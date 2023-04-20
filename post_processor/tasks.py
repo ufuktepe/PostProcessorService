@@ -69,13 +69,13 @@ def merge_results(self, feature_table_paths, taxonomy_results_paths, timestamp):
                          contents='Error in generating taxonomy analysis visualizations.')
         return
 
-    # Unzip feature table qzv file and move the data folder
-    utils.unzip(qzv_table_path, output_dir)
-    move_data_folder(output_dir=output_dir, folder_name='feature_table')
-
-    # Unzip taxonomy results qzv file and move the data folder
-    utils.unzip(taxonomy_bar_plot_path, output_dir)
-    move_data_folder(output_dir=output_dir, folder_name='taxonomy_results')
+    # # Unzip feature table qzv file and move the data folder
+    # utils.unzip(qzv_table_path, output_dir)
+    # move_data_folder(output_dir=output_dir, folder_name='feature_table')
+    #
+    # # Unzip taxonomy results qzv file and move the data folder
+    # utils.unzip(taxonomy_bar_plot_path, output_dir)
+    # move_data_folder(output_dir=output_dir, folder_name='taxonomy_results')
 
     progress_recorder.set_progress(100, 100, description=f"Process completed.")
 
