@@ -93,7 +93,7 @@ DATABASES = {
         'NAME': 'NcbiSraPostgress',
         'USER': 'postgres',
         'PASSWORD': 'ThisIsAMasterPassword',
-        'HOST': 'ncbisrapostgress.cp1zd8eys4m3.us-east-1.rds.amazonaws.com',
+        'HOST': 'ncbi-sra-aurora-postgres.cgxdzuzsyrfm.us-west-2.rds.amazonaws.com',
         'PORT': '5432',
     }
 }
