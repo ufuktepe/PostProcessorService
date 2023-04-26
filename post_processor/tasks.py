@@ -123,15 +123,30 @@ def create_results_csv(self, run_ids, output_dir):
             # Skip the run id
             continue
 
+        center_name = run_metadata.center_name
+        experiment = run_metadata.experiment
+        library_layout = run_metadata.librarylayout
+        sample_acc = run_metadata.sample_acc
+        biosample = run_metadata.biosample
+        organism = run_metadata.organism
+        sra_study = run_metadata.sra_study
+        bioproject = run_metadata.bioproject
+        geo_loc_name_country_calc = run_metadata.geo_loc_name_country_calc
+        geo_loc_name_country_continent_calc = run_metadata.geo_loc_name_country_continent_calc
+        
         for run_result in run_results:
-            csv_contents.append(f'{run_result.acc},{run_result.taxon},{run_result.confidence},{run_result.abundance}\n')
+            csv_contents.append(f'{run_result.acc},{run_result.taxon},{run_result.confidence},{run_result.abundance},'
+                                f'{center_name},{experiment},{library_layout},{sample_acc},{biosample},{organism},'
+                                f'{sra_study},{bioproject},{geo_loc_name_country_calc},'
+                                f'{geo_loc_name_country_continent_calc}\n')
 
     progress_recorder.set_progress(95, 100, description=f"Generating the csv file.")
 
     # Create the csv file
     results_csv_path = os.path.join(output_dir, 'results.csv')
     with open(results_csv_path, "w") as results:
-        results.write('acc,taxon,confidence,abundance\n')
+        results.write('acc,taxon,confidence,abundance,center_name,experiment,library_layout,sample_acc,biosample,'
+                      'organism,sra_study,bioproject,geo_loc_name_country_calc,geo_loc_name_country_continent_calc\n')
         results.writelines(csv_contents)
 
     progress_recorder.set_progress(100, 100, description=f"Process completed.")
