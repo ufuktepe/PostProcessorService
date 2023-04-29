@@ -33,14 +33,17 @@ class Metadata(models.Model):
     ena_last_update_run = models.TextField(blank=True, null=True)
     sample_name_sam = models.TextField(blank=True, null=True)
     datastore_filetype = models.TextField(blank=True, null=True)
+    attributes = models.TextField(blank=True, null=True)
     jattr = models.TextField(blank=True, null=True)
-    race_sam = models.TextField(blank=True, null=True)
-    body_site_sam = models.TextField(blank=True, null=True)
-    source_name_sam = models.TextField(blank=True, null=True)
-    bytes = models.TextField(blank=True, null=True)
-    tissue_sam = models.TextField(blank=True, null=True)
-    cell_type_sam = models.TextField(blank=True, null=True)
-    sex_calc = models.TextField(blank=True, null=True)
+    ecotype_sam = models.TextField(blank=True, null=True)
+    cultivar_sam = models.TextField(blank=True, null=True)
+    breed_sam = models.TextField(blank=True, null=True)
+    strain_sam = models.TextField(blank=True, null=True)
+    iosolate_sam = models.TextField(blank=True, null=True)
+    race_ethnicity = models.TextField(blank=True, null=True)
+    gender = models.TextField(blank=True, null=True)
+    user_id = models.CharField(max_length=255, blank=True, null=True)
+    created_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -62,6 +65,8 @@ class Results(models.Model):
 class Status(models.Model):
     acc = models.CharField(primary_key=True, max_length=255)
     user_id = models.CharField(max_length=255, blank=True, null=True)
+    email = models.CharField(max_length=255, blank=True, null=True)
+    email_notification = models.BooleanField()
     public = models.BooleanField()
     status = models.SmallIntegerField()
     output_path = models.CharField(max_length=1024, blank=True, null=True)
