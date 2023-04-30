@@ -1,3 +1,4 @@
+import logging
 import os
 import shutil
 
@@ -12,18 +13,25 @@ from .DataEngineering import utils
 from .models import Metadata
 from .models import Results
 
+logger = logging.getLogger(__name__)
+
 
 @shared_task(bind=True)
-def merge_results(self, feature_table_paths, taxonomy_results_paths, timestamp):
+def merge_results(self, feature_table_paths, taxonomy_results_paths, timestamp, run_ids):
     """
     Celery task to merge the results.
     """
     output_dir = os.path.join(S3_MERGED_RESULTS_PATH, timestamp + '-' + self.request.id)
     utils.create_dir(output_dir)
 
+    logger.debug(f'merge_results: will merge the results in {output_dir}')
+
     # Create a progress recorder.
     progress_recorder = ProgressRecorder(self)
-    progress_recorder.set_progress(5, 100, description=f"Process started.")
+    progress_recorder.set_progress(5, 100, description=f"Generating the results table...")
+
+    # Create results.csv
+    create_results_csv(run_ids, output_dir)
 
     # Path for the merged feature table qza file.
     qza_table_path = os.path.join(output_dir, 'merged_feature_tables.qza')
@@ -37,7 +45,10 @@ def merge_results(self, feature_table_paths, taxonomy_results_paths, timestamp):
     # Path for the merged taxonomy bar plot.
     taxonomy_bar_plot_path = os.path.join(output_dir, 'taxonomy_bar_plot.qzv')
 
-    progress_recorder.set_progress(20, 100, description=f"Merging feature tables...")
+    desc = 'Merging feature tables...'
+    logger.debug(f'merge_results: {desc}')
+
+    progress_recorder.set_progress(20, 100, description=desc)
     try:
         results_merger.merge_feature_tables(feature_table_paths, qza_table_path, CONDA_PATH, ENV)
     except ValueError:
@@ -45,7 +56,10 @@ def merge_results(self, feature_table_paths, taxonomy_results_paths, timestamp):
                          contents='Error in merging feature tables.')
         return
 
-    progress_recorder.set_progress(40, 100, description=f"Generating feature table visualizations...")
+    desc = 'Generating feature table visualizations...'
+    logger.debug(f'merge_results: {desc}')
+
+    progress_recorder.set_progress(40, 100, description=desc)
     try:
         results_merger.convert_feature_table(qza_table_path, qzv_table_path, CONDA_PATH, ENV)
     except ValueError as e:
@@ -53,7 +67,10 @@ def merge_results(self, feature_table_paths, taxonomy_results_paths, timestamp):
                          contents=f'Error in generating feature table visualizations.\n{str(e)}')
         return
 
-    progress_recorder.set_progress(60, 100, description=f"Merging taxonomy analysis results...")
+    desc = 'Merging taxonomy analysis results...'
+    logger.debug(f'merge_results: {desc}')
+
+    progress_recorder.set_progress(60, 100, description=desc)
     try:
         results_merger.merge_taxonomy_results(taxonomy_results_paths, qza_taxonomy_path, CONDA_PATH, ENV)
     except ValueError:
@@ -61,7 +78,10 @@ def merge_results(self, feature_table_paths, taxonomy_results_paths, timestamp):
                          contents='Error in merging taxonomy analysis results.')
         return
 
-    progress_recorder.set_progress(80, 100, description=f"Generating taxonomy analysis visualizations...")
+    desc = 'Generating taxonomy analysis visualizations...'
+    logger.debug(f'merge_results: {desc}')
+
+    progress_recorder.set_progress(80, 100, description=desc)
     try:
         results_merger.generate_taxonomy_bar_chart(qza_table_path, qza_taxonomy_path, taxonomy_bar_plot_path, CONDA_PATH, ENV)
     except ValueError:
@@ -77,7 +97,10 @@ def merge_results(self, feature_table_paths, taxonomy_results_paths, timestamp):
     # utils.unzip(taxonomy_bar_plot_path, output_dir)
     # move_data_folder(output_dir=output_dir, folder_name='taxonomy_results')
 
-    progress_recorder.set_progress(100, 100, description=f"Process completed.")
+    desc = 'Process completed.'
+    logger.debug(f'merge_results: {desc}')
+
+    progress_recorder.set_progress(100, 100, description=desc)
 
 
 def move_data_folder(output_dir, folder_name):
@@ -95,21 +118,26 @@ def move_data_folder(output_dir, folder_name):
                 break
 
 
-@shared_task(bind=True)
-def create_results_csv(self, run_ids, output_dir):
+def create_results_csv(run_ids, output_dir):
     """
     Celery task to create a csv file that includes Qiime2 results.
     """
-    # Create a progress recorder.
-    progress_recorder = ProgressRecorder(self)
-    progress_recorder.set_progress(5, 100, description=f"Process started.")
+    desc = 'Process started.'
+    logger.debug(f'create_results_csv: {desc}')
+
+    # # Create a progress recorder.
+    # progress_recorder = ProgressRecorder(self)
+    # progress_recorder.set_progress(5, 100, description=f"Process started.")
 
     csv_contents = []
-    n_runs = len(run_ids)
+    # n_runs = len(run_ids)
+
+    desc = 'Populating csv contents list.'
+    logger.debug(f'create_results_csv: {desc}')
 
     # Populate csv contents list
     for i, run_id in enumerate(run_ids):
-        progress_recorder.set_progress(int(5 + 85 * (i + 1) / n_runs), 100, description=f"Querying the database.")
+        # progress_recorder.set_progress(int(5 + 85 * (i + 1) / n_runs), 100, description=f"Querying the database.")
 
         try:
             run_metadata = Metadata.objects.get(pk=run_id)
@@ -140,7 +168,10 @@ def create_results_csv(self, run_ids, output_dir):
                                 f'{sra_study},{bioproject},{geo_loc_name_country_calc},'
                                 f'{geo_loc_name_country_continent_calc}\n')
 
-    progress_recorder.set_progress(95, 100, description=f"Generating the csv file.")
+    desc = 'Generating the csv file.'
+    logger.debug(f'create_results_csv: {desc}')
+
+    # progress_recorder.set_progress(95, 100, description=desc)
 
     # Create the csv file
     results_csv_path = os.path.join(output_dir, 'results.csv')
@@ -149,4 +180,7 @@ def create_results_csv(self, run_ids, output_dir):
                       'organism,sra_study,bioproject,geo_loc_name_country_calc,geo_loc_name_country_continent_calc\n')
         results.writelines(csv_contents)
 
-    progress_recorder.set_progress(100, 100, description=f"Process completed.")
+    desc = 'Process completed.'
+    logger.debug(f'create_results_csv: {desc}')
+
+    # progress_recorder.set_progress(100, 100, description=desc)

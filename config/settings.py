@@ -126,7 +126,7 @@ LOGGING = {
     'handlers': {
         'file': {
             'class': 'logging.FileHandler',
-            'filename': 'post_processor.log',
+            'filename': 'logging.log',
             'formatter': 'verbose',
         },
     },

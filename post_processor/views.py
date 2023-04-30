@@ -46,19 +46,18 @@ def handle_request(request):
     timestamp = strftime('%Y%m%d-%H%M%S')
 
     try:
-        worker_merge_results = merge_results.delay(feature_table_paths, taxonomy_results_paths, timestamp)
+        worker_merge_results = merge_results.delay(feature_table_paths, taxonomy_results_paths, timestamp, run_ids)
     except ValueError as e:
         return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    output_dir = os.path.join(S3_MERGED_RESULTS_PATH, timestamp + '-' + worker_merge_results.task_id)
+    # output_dir = os.path.join(S3_MERGED_RESULTS_PATH, timestamp + '-' + worker_merge_results.task_id)
 
-    try:
-        worker_create_results_csv = create_results_csv.delay(run_ids, output_dir)
-    except ValueError as e:
-        return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    # try:
+    #     worker_create_results_csv = create_results_csv.delay(run_ids, output_dir)
+    # except ValueError as e:
+    #     return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     response = JsonResponse({'merge_results_task_id': worker_merge_results.task_id,
-                             'create_csv_task_id': worker_create_results_csv.task_id,
                              'timestamp': timestamp})
 
     # response.headers['Access-Control-Allow-Origin'] = '*'
