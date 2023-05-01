@@ -161,12 +161,19 @@ def create_results_csv(run_ids, output_dir):
         bioproject = run_metadata.bioproject
         geo_loc_name_country_calc = run_metadata.geo_loc_name_country_calc
         geo_loc_name_country_continent_calc = run_metadata.geo_loc_name_country_continent_calc
+        gender = run_metadata.gender
+        breed_sam = run_metadata.breed_sam
+        cultivar_sam = run_metadata.cultivar_sam
+        ecotype_sam = run_metadata.ecotype_sam
+        isolate_sam = run_metadata.isolate_sam
+        libraryselection = run_metadata.libraryselection
+        strain_sam = run_metadata.strain_sam
         
         for run_result in run_results:
             csv_contents.append(f'{run_result.acc},{run_result.taxon},{run_result.confidence},{run_result.abundance},'
                                 f'{center_name},{experiment},{library_layout},{sample_acc},{biosample},{organism},'
                                 f'{sra_study},{bioproject},{geo_loc_name_country_calc},'
-                                f'{geo_loc_name_country_continent_calc}\n')
+                                f'{geo_loc_name_country_continent_calc},{gender},{breed_sam},{cultivar_sam},{ecotype_sam},{isolate_sam},{libraryselection},{strain_sam}\n')
 
     desc = 'Generating the csv file.'
     logger.debug(f'create_results_csv: {desc}')
@@ -177,7 +184,8 @@ def create_results_csv(run_ids, output_dir):
     results_csv_path = os.path.join(output_dir, 'results.csv')
     with open(results_csv_path, "w") as results:
         results.write('acc,taxon,confidence,abundance,center_name,experiment,library_layout,sample_acc,biosample,'
-                      'organism,sra_study,bioproject,geo_loc_name_country_calc,geo_loc_name_country_continent_calc\n')
+                      'organism,sra_study,bioproject,country,continent,sex,breed_sam,cultivar_sam,ecotype_sam,'
+                      'isolate_sam,libraryselection,strain_sam\n')
         results.writelines(csv_contents)
 
     desc = 'Process completed.'
