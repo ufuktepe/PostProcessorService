@@ -44,8 +44,8 @@ Create a log folder for celery
 3. Provide file paths for S3_MERGED_RESULTS_PATH and CONDA_PATH in config/settings.py
 4. Start the redis server using ```sudo systemctl start redis```
 5. Start supervisor ```sudo supervisord -c /etc/supervisor/celery.conf```
-5. Navigate to the project folder ```cd PostProcessorService/```  
-6. Run the following commands.
+6. Navigate to the project folder ```cd PostProcessorService/```  
+7. Run the following commands.
 
 ```python
 source venv/bin/activate  
@@ -53,7 +53,7 @@ sudo service nginx start
 gunicorn -c config/dev.py
 ```
 
-7. To merge Qiime2 results and generate visualizations send a post request to port 8000. The body of the post request must include json data with the following format:
+8. To merge Qiime2 results and generate visualizations send a post request to port 8000. The body of the post request must include json data with the following format:
 {
   "run_ids": "SRR18828316 SRR18828317 SRR18828318"
 }
