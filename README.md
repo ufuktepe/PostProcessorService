@@ -22,7 +22,7 @@ source venv/bin/activate
 python3 manage.py runserver 0:8000
 ```
 
-4. To Qiime2 merge results and generate visualizations send a post request to port 8000. The body of the post request must include json data with the following format:
+4. To merge Qiime2 results and generate visualizations send a post request to port 8000. The body of the post request must include json data with the following format:
 {
   "run_ids": "SRR18828316 SRR18828317 SRR18828318"
 }
