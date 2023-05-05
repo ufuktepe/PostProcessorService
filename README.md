@@ -53,7 +53,7 @@ sudo service nginx start
 gunicorn -c config/dev.py
 ```
 
-4. To merge Qiime2 results and generate visualizations send a post request to port 8000. The body of the post request must include json data with the following format:
+7. To merge Qiime2 results and generate visualizations send a post request to port 8000. The body of the post request must include json data with the following format:
 {
   "run_ids": "SRR18828316 SRR18828317 SRR18828318"
 }
